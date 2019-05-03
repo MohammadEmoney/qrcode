@@ -27,7 +27,7 @@ class QRCodeController extends Controller
             'image' => 'images/' . $fileName,
             'text' => $request->text
         ];
-//        $qrcode = QRCode::create($data);
-        return view('qrcode.index', compact('data'));
+       $qrcode = QRCode::create($data);
+        return $data;
     }
 }

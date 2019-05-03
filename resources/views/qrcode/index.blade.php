@@ -6,23 +6,68 @@
             QRCode Generator
         </div>
         <div class="content">
-            <form action="{{ route('qr.generate') }}" method="post">
-                @csrf
+            <div class="form">
                 <label for="text">Insert Text</label>
-                <input type="text" class="form-control" id="text" name="text" placeholder="www.example.com" value="{{ old('text') }}">
+                <input type="url" class="form-control" id="text"
+                    placeholder="www.example.com">
                 <div class="my-3">
-                    <button class="btn btn-primary" type="submit">Generate</button>
-                </div>
-            </form>
-        </div>
-        @if(isset($data))
-            <hr>
-            <div>
-                <img src="/{{ $data['image'] }}" width="300" alt="{{ $data['text'] }}">
-                <div>
-                    <a href="{{ $data['image'] }}" class="btn btn-secondary">Save</a>
+                    <button class="btn btn-primary" id="qrgenerate">Generate</button>
                 </div>
             </div>
-        @endif
+        </div>
+
+
+        <hr />
+        <div class="output" style="visibility: hidden">
+            <img src="" width="300" alt="" id="image-qrcode" />
+            <div>
+                <a href="" class="btn btn-secondary" id="url-qrcode">Save</a>
+            </div>
+        </div>
+
+
+
     </div>
+@endsection
+
+
+@section('script')
+
+    <script type="text/javascript">
+        
+        $(document).ready(() => {
+
+            $('#qrgenerate').on('click', (e) => {
+                e.preventDefault();
+
+                let text = $('#text').val();
+                
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name=csrf-token]').attr('content')
+                    }
+                })
+                // csrf setup
+
+                $.ajax({
+                    type: "POST",
+                    url: '/qrcode',
+                    data: { text: text },
+                    success: (res) => {
+                        $('.output').css("visibility", "visible")
+                        $('#image-qrcode').attr('src', res.image)
+                        $('#image-qrcode').attr('alt', res.text)
+                        $('#url-qrcode').attr('href', res.text)
+                    }
+                })
+                // send for generate QRCode
+
+            })
+            // qr-btn
+
+        })
+        // readyState
+
+    </script>
+
 @endsection
